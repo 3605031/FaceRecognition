@@ -38,13 +38,15 @@ def load_model():
     base_out = base_model.output
     # TODO: add a flatten layer, a dense layer with 256 units, a dropout layer with 0.5 rate,
     # TODO: and another dense layer for output. The final layer should have the same number of units as classes
-    base_model = Flatten()(base_model)
-    base_model = Dense(units=256)(base_model)
-    base_model = Dropout(rate=0.5)(base_model)
+    x = Flatten()(base_out)
+    x = Dense(units=256)(x)
+    base_out = Dropout(rate=0.5)(base_out)
 
     model = Model(inputs=base_model.input, outputs=predictions)
     print('Build model')
     model.summary()
+
+
 
     # TODO: compile the model, use SGD(lr=1e-4,momentum=0.9) for optimizer, 'categorical_crossentropy' for loss,
     # TODO: and ['accuracy'] for metrics
