@@ -38,9 +38,11 @@ def load_model():
     base_out = base_model.output
     # TODO: add a flatten layer, a dense layer with 256 units, a dropout layer with 0.5 rate,
     # TODO: and another dense layer for output. The final layer should have the same number of units as classes
-    base_model = Flatten()(base_model)
-    base_model = Dense(units=256)(base_model)
-    base_model = Dropout(rate=0.5)(base_model)
+    x = Flatten()(base_out)
+    x = Dense(units=256)(x)
+    x = Dropout(rate=0.5)(x)
+
+    predictions = Dense(NUM_CLASSES)(x)
 
     model = Model(inputs=base_model.input, outputs=predictions)
     print('Build model')
@@ -48,8 +50,8 @@ def load_model():
 
     # TODO: compile the model, use SGD(lr=1e-4,momentum=0.9) for optimizer, 'categorical_crossentropy' for loss,
     # TODO: and ['accuracy'] for metrics
-    sgd = optimzers.SGD(lr=1e-4,momentum=0.9)
-    model.compile(loss='categorical_crossentropy', optimzer='sgd', metrics=['accuracy'])
+    sgd = optimizers.SGD(lr=1e-4,momentum=0.9)
+    model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
 
     print('Compile model')
     return model
@@ -65,7 +67,7 @@ def load_data(src_path):
         image_path_list += sorted(glob.glob(os.path.join(class_path, '*jpg')))
     random.shuffle(image_path_list)
     num_images = len(image_path_list)
-    #print('-- This set has {} images.'.format(num_images)
+    print('-- This set has {} images.'.format(num_images))
     X = np.zeros((num_images, IMG_H, IMG_W, NUM_CHANNELS))
     Y = np.zeros((num_images, 1))
     # read images and labels
@@ -91,10 +93,10 @@ def main():
     print('Load val data:')
     X_val, Y_val = load_data(VAL_DIR)
     # TODO: Train model
-    
+    fit(model, x=X_train, y=Y_train, batch_size=BATCH_SIZE,epochs = 1,validation_data=load_data(VAL_DIR))
 
     # TODO: Save model weights
-
+    model.save()
     print('model weights saved.')
     return
 
